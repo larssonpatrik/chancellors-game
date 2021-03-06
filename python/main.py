@@ -1,13 +1,12 @@
-import random
 import functions
 
 PolicyList = ["Red", "Red", "Red", "Blue", "Blue"]
 DiscardPile = []
 voteNr = 0
 
+functions.AssignTeamMembers()
 run = True
 while run:
-    functions.AssignTeamMembers()
     DrawList = functions.drawPolicy(PolicyList)
 
     if functions.redPerksLogic() == True:        
