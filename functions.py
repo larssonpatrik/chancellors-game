@@ -1,8 +1,10 @@
 import random
+
 RedPoints = 0
 BluePoints = 0
+clear = "\n"*100
 
-def DrawPolicy(PolicyList):
+def drawPolicy(PolicyList):
     DrawList = []
 
     i = 0
@@ -11,12 +13,12 @@ def DrawPolicy(PolicyList):
         i += 1
     return DrawList
 
-def DiscardCard(DrawList, discard, DiscardPile):
+def discardCard(DrawList, discard, DiscardPile):
     discardedCard = DrawList[discard - 1]
     DiscardPile.append(discardedCard)
     return DiscardPile
 
-def RedPerksPrint():
+def redPerksPrint():
     if RedPoints == 2:
         print("The president may check any players team affiliation.")
     elif RedPoints == 3:
@@ -25,7 +27,7 @@ def RedPerksPrint():
         print("The president can kill any player. All players have to be quiet.")
         print("Also, if Supreme gets elected chancellor, Red team wins.")
 
-def RedPerksLogic():
+def redPerksLogic():
     if RedPoints == 2:
         SupremeWin = False
     elif RedPoints == 3:
@@ -36,7 +38,7 @@ def RedPerksLogic():
         SupremeWin = False
     return SupremeWin
 
-def AwardPoint(enactedPolicy):
+def awardPoint(enactedPolicy):
     if enactedPolicy == "Blue":
         global BluePoints
         print("A blue policy was enacted.")
@@ -65,12 +67,12 @@ def chancellorVote(voteNr, DiscardPile):
 
         if voteNr == 3:
             print("\nThe chancellor vote has not been passed in three tries. The upper policy in the discard pile will be enacted!")
-            AwardPoint(DiscardPile[-1])
+            awardPoint(DiscardPile[-1])
             voteNr = 0
             voteState = True
     return voteNr
 
-def CheckForWinner():
+def checkForWinner():
     if RedPoints == 5:
         print("Red team wins!")
         run = False
@@ -106,27 +108,41 @@ def chancellorVoteSupreme(voteNr, DiscardPile):
 
         if voteNr == 3:
             print("\nThe chancellor vote has not been passed in three tries. The upper policy in the discard pile will be enacted!")
-            AwardPoint(DiscardPile[-1])
+            awardPoint(DiscardPile[-1])
             voteNr = 0
             voteState = True
     return voteNr
 
-def PresidentsTurn(DrawList, DiscardPile):
+def presidentsTurn(DrawList, DiscardPile):
     print("\n================= PRESIDENTS TURN =================")
     print("You have drawn the following policies: ")
     print(DrawList)
     discard = int(input("\nPresident, which policy do you want to discard? (1,2,3): \n"))
 
-    DiscardCard(DrawList, discard, DiscardPile)
+    discardCard(DrawList, discard, DiscardPile)
     DrawList.pop(discard - 1)
     return DrawList, DiscardPile
 
-def ChancellorsTurn(DrawList, DiscardPile):
+def chancellorsTurn(DrawList, DiscardPile):
     print("\n================= CHANCELLORS TURN =================")
     print("You have recieved the following policies: ")
     print(DrawList)
     discard = int(input("\nChancellor, which policy do you want to discard? (1,2): "))
 
-    DiscardCard(DrawList, discard, DiscardPile)
+    discardCard(DrawList, discard, DiscardPile)
     DrawList.pop(discard - 1)
     return DrawList, DiscardPile
+
+def AssignTeamMembers():
+    numberOfPlayers = int(input("How many players: "))
+    teamList = ["Blue", "Red - Supreme", "Blue", "Red", "Blue", "Red", "Blue", "Red", "Blue", "Red", "Blue", "Red"]
+    
+    for i in range(12 - numberOfPlayers):
+        teamList.pop(-1)
+
+    random.shuffle(teamList)
+
+    for i in range(numberOfPlayers):
+        input("Press 'Enter' to show your team affiliation.")
+        input("You were assigned team " + teamList[i] + "\n Press enter to hide your team affiliation.")
+        print(clear)
