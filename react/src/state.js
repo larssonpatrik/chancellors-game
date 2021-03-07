@@ -15,13 +15,33 @@ const PLAYER_POOL = [
   "RED",
 ];
 
+const POLICY_POOL = [
+  "RED",
+  "RED",
+  "RED",
+  "RED",
+  "RED",
+  "RED",
+  "RED",
+  "RED",
+  "RED",
+  "RED",
+  "RED",
+  "BLUE",
+  "BLUE",
+  "BLUE",
+  "BLUE",
+  "BLUE",
+  "BLUE",
+];
+
 const defaultValue = {
+  policyDeck: shuffle([...POLICY_POOL]),
+  policyDiscardPile: [],
   players: [],
   ready: false,
-  points: {
-    blue: 0,
-    red: 0,
-  },
+  enactedPolicies: [],
+  electionTracker: 0,
 };
 const GameState = React.createContext(defaultValue);
 
@@ -68,6 +88,23 @@ const gameLogicReducer = (state, action) => {
     case "SET_READY": {
       const { payload: isReady } = action;
       return { ...state, ready: isReady };
+    }
+    case "SET_ELECTION_TRACKER": {
+      const { payload: count } = action;
+      if (count >= 3) {
+        if (state.policyDiscardPile.length === 0) {
+          return { ...state, electionTracker: 0 };
+        } else {
+          const enactedPolicy = state.policyDiscardPile.pop();
+          return {
+            ...state,
+            electionTracker: 0,
+            policyDiscardPile: [...state.policyDiscardPile],
+            enactedPolicies: [...state.enactedPolicies, enactedPolicy],
+          };
+        }
+      }
+      return { ...state, electionTracker: count };
     }
     default:
       return state;
