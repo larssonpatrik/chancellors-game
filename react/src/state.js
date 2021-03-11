@@ -38,6 +38,7 @@ const POLICY_POOL = [
 const defaultValue = {
   policyDeck: shuffle([...POLICY_POOL]),
   policyDiscardPile: [],
+  drawnPolicies: [],
   players: [],
   ready: false,
   enactedPolicies: [],
@@ -91,20 +92,56 @@ const gameLogicReducer = (state, action) => {
     }
     case "SET_ELECTION_TRACKER": {
       const { payload: count } = action;
+      const discardPile = [...state.policyDiscardPile];
       if (count >= 3) {
-        if (state.policyDiscardPile.length === 0) {
+        if (discardPile.length === 0) {
           return { ...state, electionTracker: 0 };
         } else {
-          const enactedPolicy = state.policyDiscardPile.pop();
+          const enactedPolicy = discardPile.pop();
           return {
             ...state,
             electionTracker: 0,
-            policyDiscardPile: [...state.policyDiscardPile],
+            policyDiscardPile: discardPile,
             enactedPolicies: [...state.enactedPolicies, enactedPolicy],
           };
         }
       }
       return { ...state, electionTracker: count };
+    }
+    case "STARTED_DISCARDING": {
+      let pile = [...state.policyDeck];
+      let discardPile = [...state.policyDiscardPile];
+      if (pile.length < 3) {
+        const leftoverCard = discardPile.shift();
+        shuffle(discardPile);
+        pile = [...pile, ...discardPile];
+        discardPile = [leftoverCard];
+      }
+      const drawnPolicies = [pile.pop(), pile.pop(), pile.pop()];
+      return {
+        ...state,
+        drawnPolicies,
+        policyDeck: pile,
+        policyDiscardPile: discardPile,
+      };
+    }
+    case "DISCARDED": {
+      const { payload: index } = action;
+      const pickedCard = state.drawnPolicies[index];
+      const drawnPolicies = state.drawnPolicies.filter((_, i) => i !== index);
+
+      if (drawnPolicies.length === 0) {
+        return {
+          ...state,
+          drawnPolicies,
+          enactedPolicies: [...state.enactedPolicies, pickedCard],
+        };
+      }
+      return {
+        ...state,
+        drawnPolicies,
+        policyDiscardPile: [...state.policyDiscardPile, pickedCard],
+      };
     }
     default:
       return state;

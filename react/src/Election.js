@@ -1,7 +1,7 @@
 import React from "react";
 import { useGameState } from "./state";
 
-function Turn() {
+function Election() {
   const [gameState, dispatch] = useGameState();
 
   return (
@@ -11,7 +11,9 @@ function Turn() {
       <br />
       <button
         onClick={() => {
-          console.log("Yes was clicked");
+          dispatch({
+            type: "STARTED_DISCARDING",
+          });
         }}
       >
         Yes
@@ -32,4 +34,4 @@ function Turn() {
   );
 }
 
-export default Turn;
+export default Election;
